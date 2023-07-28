@@ -112,3 +112,7 @@ $ brownie test
 ```
 --network <the network you have added to brownie>
 ```
+
+## Dependencies
+- Python 3.9.5
+- Brownie latest
