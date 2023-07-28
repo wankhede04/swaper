@@ -20,10 +20,8 @@ def test_account_balance():
 
     WETH.approve(swapOptimal.address, 20000000000000000000, {'from': accounts[0], 'gas_price': 1000000000})
 
-    print("first")
     swapOptimal.swapOptimalWETHForUSDT(1000000000000000, 1000000000000, accounts[0].address, utc_time + 50000, {'from': accounts[0], 'gas_price': 1000000000, 'allow_revert': True})
     
     USDT.approve(swapOptimal.address, 2000000, {'from': accounts[0], 'gas_price': 1000000000})
 
-    print("second")
     swapOptimal.swapOptimalUSDTForWETH(100000, 100000, accounts[0].address, utc_time + 50000, {'from': accounts[0], 'gas_price': 1000000000, 'gas_limit': 1000000000, 'allow_revert': True})
