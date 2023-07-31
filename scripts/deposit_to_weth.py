@@ -1,10 +1,22 @@
+# Import necessary modules and libraries
 from brownie import accounts, network, Swapper, interface
-from web3 import Web3# Contract
-liquidityWeth = [0,0,0]
-liquidityUSDT = [0,0,0]
+import os
+from dotenv import load_dotenv 
+
+# Define the main function that will be executed when the script is run
 def main():
-    USDC = interface.IERC20("0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8")
-    WETH = interface.IERC20("0x82aF49447D8a07e3bd95BD0d56f35241523fBab1")
-    swapper = accounts.add(input("Enter private key to deposit eth with: "))
-    WETH.deposit({'from': swapper, 'amount': int(input("Enter amount to deposit: ")), 'gas_price': 1000000000})
-    print(WETH.balanceOf(swapper))
+    load_dotenv('../')
+    # Define ERC20 token contracts for USDC and WETH
+    USDC = interface.IERC20(os.getenv('USDC'))
+    WETH = interface.IERC20(os.getenv('WETH'))
+
+    # Add an Ethereum account for depositing ETH
+    swapper = accounts.add(input("Enter the private key to deposit ETH with: "))
+
+    # Deposit WETH to the Swapper contract
+    # Get the amount to deposit from the user and deposit it
+    deposit_amount = int(input("Enter the amount of WETH to deposit: "))
+    WETH.deposit({'from': swapper, 'amount': deposit_amount, 'gas_price': 1000000000})
+
+    # Print the balance of WETH for the swapper account after the deposit
+    print("WETH balance of the swapper account:", WETH.balanceOf(swapper))

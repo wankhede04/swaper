@@ -2,26 +2,38 @@ from brownie import accounts, Swapper, interface
 import datetime
 import time
 import calendar
+import os
+from dotenv import load_dotenv 
 
-def test_account_balance():
-    swapOptimal = Swapper.deploy({'from':accounts[0]})
-    print(accounts[0].balance())
-    print(accounts[0].address)
-    print(swapOptimal.address)
+# Define the test function for the Swapper contract
+def test_swapper():
+    load_dotenv('../')
+    # Deploy the Swapper contract with accounts[0] (the first account)
+    swapOptimal = Swapper.deploy({'from': accounts[0]})
     
-    USDC = interface.IERC20("0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8")
-    USDT = interface.IERC20("0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9")
-    WETH = interface.IERC20("0x82aF49447D8a07e3bd95BD0d56f35241523fBab1")
-    print(WETH.balanceOf(accounts[0].address))
-    #WETH.deposit({'from': accounts[0], 'amount': 1000000000000000000000, 'gas_price': 1000000000})
-
+    # Define ERC20 token contracts for USDC, USDT, and WETH
+    USDC = interface.IERC20(os.getenv('USDC'))
+    USDT = interface.IERC20(os.getenv('USDT'))
+    WETH = interface.IERC20(os.getenv('WETH'))
+    
+    # Print the address of account
+    print(accounts[0].address)
+    
+    # Deposit WETH to the Swapper contract
+    WETH.deposit({'from': accounts[0], 'amount': 1000000000000000000000, 'gas_price': 1000000000})
+    
+    # Get current UTC time
     date = datetime.datetime.utcnow()
     utc_time = calendar.timegm(date.utctimetuple())
-
+    
+    # Approve WETH tokens for the Swapper contract
     WETH.approve(swapOptimal.address, 20000000000000000000, {'from': accounts[0], 'gas_price': 1000000000})
-
+    
+    # Perform WETH -> USDT swap using the swapOptimalWETHForUSDT function
     swapOptimal.swapOptimalWETHForUSDT(1000000000000000, 1000000000000, accounts[0].address, utc_time + 50000, {'from': accounts[0], 'gas_price': 1000000000, 'allow_revert': True})
     
+    # Approve USDT tokens for the Swapper contract
     USDT.approve(swapOptimal.address, 2000000, {'from': accounts[0], 'gas_price': 1000000000})
-
+    
+    # Perform USDT -> WETH swap using the swapOptimalUSDTForWETH function
     swapOptimal.swapOptimalUSDTForWETH(100000, 100000, accounts[0].address, utc_time + 50000, {'from': accounts[0], 'gas_price': 1000000000, 'gas_limit': 1000000000, 'allow_revert': True})
